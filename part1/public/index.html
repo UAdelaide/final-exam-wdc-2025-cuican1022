@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog of the Day</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        /* Intentionally using flickering backgrounds and low-contrast text - violates the principles of cognitive burden and accessibility */
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #ff0000, #00ff00, #0000ff);
+            animation: gradient 2s ease infinite;
+            color: #eeeeee; /* Low-contrast text */
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 36px;
+            color: #dddddd; /* Low-contrast */
+            text-shadow: 2px 2px 4px #000000;
+            text-align: center;
+            animation: shake 0.5s infinite;
+        }
+        
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        
+        /* Extremely small click targets - violate the principle of dynamic burden */
+        .tiny-button {
+            width: 10px;
+            height: 10px;
+            background-color: #ff0000;
+            display: inline-block;
+            margin: 2px;
+            cursor: pointer;
+        }
+        
+        /* Randomly arranged buttons - violate the principle of cognitive burden */
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        /* Rolling areas that violate the principle of dynamic burden */
+        .scroll-area {
+            height: 200px;
+            overflow-y: scroll;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .scroll-content {
+            height: 1000px;
+        }
+        
+        /* Intentionally using very small fonts - violates the principle of accessibility */
+        .small-text {
+            font-size: 8px;
+            color: #cccccc;
+            line-height: 1;
+        }
+        
+        /* Picture container */
+        .dog-image-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .dog-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Flickering text - violates the principles of cognitive burden and accessibility */
+        .flashing-text {
+            animation: flash 0.5s linear infinite;
+            font-size: 24px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        @keyframes flash {
+            0% { color: #ff0000; }
+            25% { color: #00ff00; }
+            50% { color: #0000ff; }
+            75% { color: #ffff00; }
+            100% { color: #ff0000; }
+        }
+        
+        /* Form elements - Violate the principle of dynamic burden */
+        .form-group {
+            margin: 5px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 10px;
+            color: #dddddd;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 2px;
+            font-size: 8px;
+        }
+        
+        .submit-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 15px;
+            height: 15px;
+            background-color: #ff0000;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <h1>Dog of the Day</h1>
+        <!-- Information overload area - Violation of the cognitive burden principle -->
+        <div class="information-overload">
+            <p class="small-text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+        </div>
+        <!-- Randomly arranged buttons - violate the principle of cognitive burden -->
+        <div class="button-container">
+            <div class="tiny-button" @click="loadNewDog"></div>
+            <div class="tiny-button" @click="loadNewDog"></div>
+            <div class="tiny-button" @click="loadNewDog"></div>
+            <div class="tiny-button" @click="loadNewDog"></div>
+            <div class="tiny-button" @click="loadNewDog"></div>
+            <div class="tiny-button" @click="loadNewDog"></div>
+            <div class="tiny-button" @click="loadNewDog"></div>
+            <div class="tiny-button" @click="loadNewDog"></div>
+            <div class="tiny-button" @click="loadNewDog"></div>
+            <div class="tiny-button" @click="loadNewDog"></div>
+        </div>
+        <!-- Flickering text - violates the principles of cognitive burden and accessibility -->
+        <div class="flashing-text">Click the small red dot above to load the new dog picture!</div>
+        <!-- Dog picture - No alt attribute, violating the accessibility principle -->
+        <div class="dog-image-container">
+            <img v-if="dogImage" :src="dogImage" class="dog-image">
+        </div>
+        <!-- Rolling areas that violate the principle of dynamic burden -->
+        <div class="scroll-area">
+            <div class="scroll-content">
+                <p class="small-text" v-for="n in 50" :key="n">
+                    You need to scroll to the bottom to see all the content. This is the  {{ n }} paragraph.
+                </p>
+                <div class="tiny-button" @click="loadNewDog"></div>
+                <p class="small-text">This is the real button for loading new pictures</p>
+            </div>
+        </div>
+
+        <!-- Form - Violation of the principle of dynamic burden -->
+        <form @submit.prevent>
+            <div class="form-group">
+                <label for="name">Your name</label>
+                <input type="text" id="name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone">
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" id="address">
+            </div>
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city">
+            </div>
+            <div class="form-group">
+                <label for="state">State</label>
+                <input type="text" id="state">
+            </div>
+            <div class="form-group">
+                <label for="zip">Postcode</label>
+                <input type="text" id="zip">
+            </div>
+            <div class="form-group">
+                <label for="country">Country</label>
+                <input type="text" id="country">
+            </div>
+            <button type="submit" class="submit-button"></button>
+        </form>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        
+        createApp({
+            data() {
+                return {
+                    dogImage: '',
+                }
+            },
+            mounted() {
+                this.loadNewDog();
+            },
+            methods: {
+                loadNewDog() {
+                    axios.get('https://dog.ceo/api/breeds/image/random')
+                        .then(response => {
+                            this.dogImage = response.data.message;
+                        })
+                        .catch(error => {
+                            console.error('Failed to obtain the picture of the dog:', error);
+                        });
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html> 
